@@ -6,6 +6,16 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import type { LinksFunction } from "@remix-run/node";
+// existing imports
+
+// If you're using the Classic Remix Compiler rather than Remix Vite, you should remove ?url from the end of your CSS import paths.
+import appStylesHref from "./app.css?url";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: appStylesHref },
+];
+
 export default function App() {
   return (
     <html lang="en">
