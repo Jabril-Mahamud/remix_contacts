@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -26,10 +26,9 @@ export const loader = async () => {
   return json({ contacts });
 };
 
-// In web semantics, a POST usually means some data is changing. By convention, Remix uses this as a hint to automatically revalidate the data on the page after the action finishes.
 export const action = async () => {
   const contact = await createEmptyContact();
-  return json({ contact });
+  return redirect(`/contacts/${contact.id}/edit`);
 };
 
 export default function App() {
