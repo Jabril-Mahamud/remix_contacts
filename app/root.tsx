@@ -9,6 +9,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useNavigation,
+  useSubmit,
 } from "@remix-run/react";
 
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
@@ -39,6 +40,7 @@ export const action = async () => {
 export default function App() {
   const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+  const submit = useSubmit();
 
   useEffect(() => {
     const searchField = document.getElementById("q");
@@ -46,7 +48,7 @@ export default function App() {
       searchField.value = q || "";
     }
   }, [q]);
-  
+
   return (
     <html lang="en">
       <head>
@@ -60,8 +62,14 @@ export default function App() {
           <h1>Remix Contacts</h1>
           <div>
             {/* Because this is a GET, not a POST, Remix does not call the action function. Submitting a GET form is the same as clicking a link: only the URL changes. */}
-                        {/* Since it's not <Form method="post">, Remix emulates the browser by serializing the FormData into the URLSearchParams instead of the request body. */}
-            <Form id="search-form" role="search">
+            {/* Since it's not <Form method="post">, Remix emulates the browser by serializing the FormData into the URLSearchParams instead of the request body. */}
+            <Form
+              id="search-form"
+              role="search"
+              onChange={(event) => submit(event.currentTarget)}
+              // As you type, the form is automatically submitted now!
+              // The submit function will serialize and submit any form you pass to it. We're passing in event.currentTarget. The currentTarget is the DOM node the event is attached to (the form).
+            >
               <input
                 id="q"
                 aria-label="Search contacts"
