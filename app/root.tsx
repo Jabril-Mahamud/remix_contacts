@@ -11,7 +11,7 @@ import {
   useNavigation,
 } from "@remix-run/react";
 
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 // existing imports
 import { createEmptyContact, getContacts } from "./data";
 
@@ -22,8 +22,11 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
 ];
 
-export const loader = async () => {
-  const contacts = await getContacts();
+// loader functions have access to the search params from the request. Let's use it to filter the list:
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+  const contacts = await getContacts(q);
   return json({ contacts });
 };
 
@@ -47,6 +50,8 @@ export default function App() {
         <div id="sidebar">
           <h1>Remix Contacts</h1>
           <div>
+            {/* Because this is a GET, not a POST, Remix does not call the action function. Submitting a GET form is the same as clicking a link: only the URL changes. */}
+                        {/* Since it's not <Form method="post">, Remix emulates the browser by serializing the FormData into the URLSearchParams instead of the request body. */}
             <Form id="search-form" role="search">
               <input
                 id="q"
