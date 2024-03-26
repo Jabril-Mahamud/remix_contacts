@@ -12,7 +12,7 @@ import {
 
 import type { LinksFunction } from "@remix-run/node";
 // existing imports
-import { getContacts } from "./data";
+import { createEmptyContact, getContacts } from "./data";
 
 // If you're using the Classic Remix Compiler rather than Remix Vite, you should remove ?url from the end of your CSS import paths.
 import appStylesHref from "./app.css?url";
@@ -24,6 +24,12 @@ export const links: LinksFunction = () => [
 export const loader = async () => {
   const contacts = await getContacts();
   return json({ contacts });
+};
+
+// In web semantics, a POST usually means some data is changing. By convention, Remix uses this as a hint to automatically revalidate the data on the page after the action finishes.
+export const action = async () => {
+  const contact = await createEmptyContact();
+  return json({ contact });
 };
 
 export default function App() {
