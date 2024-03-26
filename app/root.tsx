@@ -17,6 +17,7 @@ import { createEmptyContact, getContacts } from "./data";
 
 // If you're using the Classic Remix Compiler rather than Remix Vite, you should remove ?url from the end of your CSS import paths.
 import appStylesHref from "./app.css?url";
+import { useEffect } from "react";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
@@ -38,6 +39,14 @@ export const action = async () => {
 export default function App() {
   const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const searchField = document.getElementById("q");
+    if (searchField instanceof HTMLInputElement) {
+      searchField.value = q || "";
+    }
+  }, [q]);
+  
   return (
     <html lang="en">
       <head>
