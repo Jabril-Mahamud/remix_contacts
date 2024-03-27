@@ -93,8 +93,11 @@ export default function Contact() {
 const Favorite: FunctionComponent<{
   contact: Pick<ContactRecord, "favorite">;
 }> = ({ contact }) => {
-  const favorite = contact.favorite;
   const fetcher = useFetcher();
+  // optimistic UI (update favorite based on formData)
+  const favorite = fetcher.formData
+    ? fetcher.formData.get("favorite") === "true"
+    : contact.favorite;
   return (
     // prevent navigation, URL doesn't change and history stack is unaffected
     <fetcher.Form method="post">
