@@ -69,9 +69,15 @@ export default function App() {
             <Form
               id="search-form"
               role="search"
-              onChange={(event) => submit(event.currentTarget)}
-              // As you type, the form is automatically submitted now!
+              onChange={(event) => {
+                const isFirstSearch = q === null;
+                submit(event.currentTarget, {
+                  replace: !isFirstSearch,
+                });
+              }}
+              // As you type, the form is automatically submitted
               // The submit function will serialize and submit any form you pass to it. We're passing in event.currentTarget. The currentTarget is the DOM node the event is attached to (the form).
+              // replace option simplifies history stack
             >
               <input
                 id="q"
