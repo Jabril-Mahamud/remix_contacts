@@ -3,12 +3,12 @@
 // /contacts/abc
 
 import { json } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import type { FunctionComponent } from "react";
-import { type ContactRecord, getContact } from "../data";
+import { type ContactRecord, getContact, updateContact } from "../data";
 
 // contactId from URL params
 // Invariant is a handy function for throwing an error with a custom message when you anticipated a potential issue with your code.
@@ -20,6 +20,14 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   }
   // Now, if the user isn't found, code execution down this path stops and Remix renders the error path instead. Components in Remix can focus only on the happy path
   return json({ contact });
+};
+
+export const action = async ({ params, request }: ActionFunctionArgs) => {
+  invariant(params.contactId, "Missing contactId param");
+  const formData = await request.formData();
+  return updateContact(params.contactId, {
+    favorite: formData.get("favorite") === "true",
+  });
 };
 
 export default function Contact() {
@@ -86,16 +94,18 @@ const Favorite: FunctionComponent<{
   contact: Pick<ContactRecord, "favorite">;
 }> = ({ contact }) => {
   const favorite = contact.favorite;
-
+  const fetcher = useFetcher();
   return (
-    <Form method="post">
+    // prevent navigation, URL doesn't change and history stack is unaffected
+    <fetcher.Form method="post">
       <button
         aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+        // the action uses this name via formData.get("favorite")
         name="favorite"
         value={favorite ? "false" : "true"}
       >
         {favorite ? "★" : "☆"}
       </button>
-    </Form>
+    </fetcher.Form>
   );
 };
